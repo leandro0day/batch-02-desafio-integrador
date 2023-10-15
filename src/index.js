@@ -1,7 +1,7 @@
 import { Contract, ethers } from "ethers";
 
 import usdcTknAbi from "../artifacts/contracts/USDCoin.sol/USDCoin.json";
-// import bbitesTokenAbi
+import bbitesTokenAbi from "../artifacts/contracts/BBitesToken.sol/BBitesToken.json"
 // import publicSaleAbi
 // import nftTknAbi
 
@@ -12,7 +12,8 @@ import walletAndIds from "../wallets/walletList";
 import { MerkleTree } from "merkletreejs";
 var Buffer = buffer.Buffer;
 var merkleTree;
-
+var usdcAddress = "0xf964A915c31D58558bD88a4da8B9a8Fbe9107276";
+var account;
 function hashToken(tokenId, account) {
   return Buffer.from(
     ethers
@@ -28,19 +29,17 @@ function buildMerkleTree() {
   });
 }
 
-var provider, signer, account;
+var provider, signer
 var usdcTkContract, bbitesTknContract, pubSContract, nftContract;
-var usdcAddress, bbitesTknAdd, pubSContractAdd;
+var  bbitesTknAdd, pubSContractAdd;
 
 function initSCsGoerli() {
   provider = new ethers.BrowserProvider(window.ethereum);
-
-  usdcAddress = "";
-  bbitesTknAdd = "";
+  bbitesTknAdd = "0xC772207B33C98Ca4A5416C210E2c726E03dDDCD5";
   pubSContractAdd = "";
 
-  usdcTkContract; // = new Contract(...
-  bbitesTknContract; // = new Contract(...
+  usdcTkContract = new Contract(usdcAddress, usdcTknAbi, provider);
+  bbitesTknContract = new Contract(bbitesTknAdd, bbitesTokenAbi, provider) ;  
   pubSContract; // = new Contract(...
 }
 
@@ -58,24 +57,73 @@ function setUpListeners() {
   var walletIdEl = document.getElementById("walletId");
   bttn.addEventListener("click", async function () {
     if (window.ethereum) {
-      [account] = await ethereum.request({
-        method: "eth_requestAccounts",
-      });
-      console.log("Billetera metamask", account);
-      walletIdEl.innerHTML = account;
-      signer = await provider.getSigner(account);
+      try {
+        // Solicitar acceso a la cuenta del usuario
+        const accounts = await ethereum.request({
+          method: "eth_requestAccounts",
+        });
+
+        // Verificar si se seleccionó una cuenta
+        if (accounts.length > 0) {
+          account = accounts[0];
+          console.log("Billetera Metamask:", account);
+
+          // Mostrar la cuenta en la interfaz
+          walletIdEl.innerHTML = account;
+
+          signer = await provider.getSigner(account);
+        } else {
+          console.log("No se seleccionó una cuenta.");
+        }
+      } catch (error) {
+        console.error("Error al conectar con Metamask:", error);
+      }
+    } else {
+      console.log("Metamask no detectado en el navegador.");
     }
   });
 
   // USDC Balance - balanceOf
   var bttn = document.getElementById("usdcUpdate");
+
   bttn.addEventListener("click", async function () {
-    var balance = await usdcTkContract.balanceOf(account);
+    //var balance = await usdcTkContract.balanceOf(account);
     var balanceEl = document.getElementById("usdcBalance");
-    balanceEl.innerHTML = ethers.formatUnits(balance, 6);
+    try {
+
+      const provider = new ethers.BrowserProvider(window.ethereum); /* new ethers.providers.Web3provider(ethereum); */
+      const signer = provider.getSigner();
+      const Contract1 = new Contract(usdcAddress, usdcTknAbi.abi, provider);
+      const transaction = await Contract1.balanceOf(account);
+      console.log("sirvio");
+      /* const balance = await usdcTkContract.balanceOf(account);*/
+
+      balanceEl.innerHTML = ethers.formatUnits(transaction, 6); 
+    } catch (error) {
+      console.error("Error al obtener el balance de USDC:", error);
+    }
   });
 
   // Bbites token Balance - balanceOf
+  var Bbites = document.getElementById("bbitesTknUpdate");
+  Bbites.addEventListener("click", async function () {
+    //var balance = await usdcTkContract.balanceOf(account);
+    var balanceEl = document.getElementById("bbitesTknBalance");
+    try {
+
+      const provider = new ethers.BrowserProvider(window.ethereum); /* new ethers.providers.Web3provider(ethereum); */
+      const signer = provider.getSigner();
+      const Contract1 = new Contract(bbitesTknAdd, bbitesTokenAbi.abi, provider);
+      const transaction = await Contract1.balanceOf(account);
+      console.log("sirvio");
+      /* const balance = await usdcTkContract.balanceOf(account);*/
+
+      balanceEl.innerHTML = ethers.formatUnits(transaction, 6); 
+    } catch (error) {
+      console.error("Error al obtener el balance de USDC:", error);
+    }
+  });
+
 
   // APPROVE BBTKN
   // bbitesTknContract.approve
@@ -138,15 +186,17 @@ async function setUp() {
     window.location.reload();
   });
 
+  setUpListeners();
+
   initSCsGoerli();
 
   // initSCsMumbai
 
   // setUpListeners
 
-  // setUpEventsContracts
+  setUpEventsContracts();
 
-  // buildMerkleTree
+  buildMerkleTree();
 }
 
 setUp()
