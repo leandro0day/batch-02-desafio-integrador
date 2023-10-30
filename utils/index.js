@@ -11,7 +11,7 @@ function getRole(role) {
 
 async function ex(contract, command, args, messageWhenFailed) {
   try {
-    var tx = await contract[command](...args);
+    let tx = await contract[command](...args);
     return await tx.wait();
   } catch (e) {
     console.error(messageWhenFailed, e);
@@ -34,7 +34,7 @@ async function verify(implementation, contractName, arguments = []) {
 
 async function printAddress(contractName, proxyAddress) {
   console.log(`${contractName} Proxy Address: ${proxyAddress}`);
-  var implementationAddress = await upgrades.erc1967.getImplementationAddress(
+  let implementationAddress = await upgrades.erc1967.getImplementationAddress(
     proxyAddress
   );
   console.log(`${contractName} Impl Address: ${implementationAddress}`);
@@ -42,24 +42,24 @@ async function printAddress(contractName, proxyAddress) {
 }
 
 async function deploySC(contractName, args = []) {
-  var smartContract = await gcf(contractName);
-  var proxyContract = await dp(smartContract, [...args], {
+  let smartContract = await gcf(contractName);
+  let proxyContract = await dp(smartContract, [...args], {
     kind: "uups",
   });
   if (process.env.HARDHAT_NETWORK) {
     // true cuando se usa '--network matic' en el script de deployment
-    var tx = await proxyContract.waitForDeployment();
+    let tx = await proxyContract.waitForDeployment();
     await tx.deploymentTransaction().wait(5);
   }
   return proxyContract;
 }
 
 async function deploySCNoUp(contractName, args = []) {
-  var smartContract = await dc(contractName, [...args]);
+  let smartContract = await dc(contractName, [...args]);
 
   // true cuando se usa '--network matic' en el script de deployment
   if (process.env.HARDHAT_NETWORK) {
-    var res = await smartContract.waitForDeployment();
+    let res = await smartContract.waitForDeployment();
     await res.deploymentTransaction().wait(5);
 
     console.log(`${contractName} - Imp: ${await smartContract.getAddress()}`);

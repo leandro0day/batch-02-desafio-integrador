@@ -222,3 +222,5 @@ Crear un front-end minimalista para poder interactuar con el contrato de `Public
 5. Pega aquí la tx de una compra de un NFT `mistico` en `Public Sale` usando `ether` (random id):
 6. Pega aquí la tx de una acuñación whitelist de un NFT en el contrato `NFT`:
 7. Pega aquí la tx de un buy back de NFT en el contrato `NFT`:
+# batch-02-desafio-integradora
+# batch-02-desafio-integradora

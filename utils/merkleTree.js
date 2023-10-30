@@ -3,7 +3,7 @@ const keccak256 = require("keccak256");
 const { ethers } = require("hardhat");
 const walletAndIds = require("../wallets/walletList");
 
-var merkleTree, root;
+let merkleTree, root;
 function hashToken(tokenId, account) {
   return Buffer.from(
     ethers

@@ -11,45 +11,74 @@ const {
 
 const { getRootFromMT } = require("../utils/merkleTree");
 
-var MINTER_ROLE = getRole("MINTER_ROLE");
-var BURNER_ROLE = getRole("BURNER_ROLE");
+let MINTER_ROLE = getRole("MINTER_ROLE");
+let BURNER_ROLE = getRole("BURNER_ROLE");
 
-// Publicar NFT en Mumbai
 async function deployMumbai() {
-  var relAddMumbai; // relayer mumbai
-  var name = "Chose a name";
-  var symbol = "Chose a symbol";
+  let cuyCollectionContract = await deploySC("CuyCollectionNft", []);
+  let cuyColproxyAdd = await cuyCollectionContract.getAddress();
 
-  // utiliza deploySC
-  // utiliza printAddress
-  // utiliza ex
-  // utiliza ex
-  // utiliza verify
+  let implAdd = await printAddress("CuyCollectionNft", cuyColproxyAdd);
 
-  await verify(implAdd, "CUYNFT");
+  const relMumbai = "0x4b8a6C8ADA8F3ea961b768ee97bEbB04eE4b5B9D";
+  await cuyCollectionContract.grantRole(MINTER_ROLE, relMumbai);
+
+  await verify(implAdd, "CuyCollectionNft", []);
 }
 
-// Publicar UDSC, Public Sale y Bbites Token en Goerli
 async function deployGoerli() {
-  var relAddGoerli; // relayer goerli
+  let bbitesContract = await deploySC("BBitesToken", []);
+  let bbitesProxyAdd = await bbitesContract.getAddress();
+  let impBT = await printAddress("BBitesToken", bbitesProxyAdd);
 
-  // var psC Contrato
-  // deploySC;
-  // var bbitesToken Contrato
-  // deploySC;
-  // var usdc Contrato
-  // deploySC;
+  const relGoerli = "0x9A5a587eBf8884d46D3c1f61069196d1C5228FFC";
+  await bbitesContract.grantRole(MINTER_ROLE, relGoerli);
+  await verify(impBT, "BBitesToken", []);
 
-  // var impPS = await printAddress("PublicSale", await psC.getAddress());
-  // var impBT = await printAddress("BBitesToken", await bbitesToken.getAddress());
-
-  // set up
-  // script para verificacion del contrato
+  let usdcContract = await deploySCNoUp("USDCoin", []);
+  let usdcAdd = await usdcContract.getAddress();
+  await verify(usdcAdd, "USDCoin", []);
 }
 
-deployMumbai()
-  // deployGoerli()
-  //
+async function deployPublicSale() {
+  let bbitesTokAdd = "0xdEE58A6F0c8fA0a45f4BE2686696B8aa7F04ce47";
+  let usdCoinAdd = "0x12711c84a5d4Add034431C132043a7F9F808f278";
+  let publicSale = await deploySC("PublicSale", [bbitesTokAdd, usdCoinAdd]);
+  let publicSaleProxyAdd = await publicSale.getAddress();
+  let impPS = await printAddress("PublicSale", publicSaleProxyAdd);
+
+  let [owner] = await ethers.getSigners();
+
+  let USDC = await ethers.getContractFactory("USDCoin");
+  let usdc = USDC.attach(usdCoinAdd);
+  let txApproveUsdc = await usdc.approve(
+    await publicSale.getAddress(),
+    100000000000n
+  );
+  await txApproveUsdc.wait();
+  console.log(`Approve de USDC: ${txApproveUsdc.hash}`);
+
+  let BBITES = await ethers.getContractFactory("BBitesToken");
+  let bbites = BBITES.attach(bbitesTokAdd);
+  let txApproveBbites = await bbites.approve(
+    await publicSale.getAddress(),
+    50000000000000000000000n
+  );
+  await txApproveBbites.wait();
+  console.log(`Approve de BBites: ${txApproveBbites.hash}`);
+
+  await verify(impPS, "PublicSale", []);
+}
+
+function roles() {
+  console.log(`El minter role en bytes32 es: ${MINTER_ROLE}`);
+  console.log(`El burner role en bytes32 es: ${BURNER_ROLE}`);
+}
+
+//deployMumbai()
+//deployGoerli()
+deployPublicSale()
+  //roles()
   .catch((error) => {
     console.error(error);
     process.exitCode = 1;

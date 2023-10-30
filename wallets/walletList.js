@@ -1,4 +1,4 @@
-module.exports = [
+export const wallets = [
   {
     id: 1000,
     address: "0xC840F562D9F69b46b4227003E01525CB99344B72",
