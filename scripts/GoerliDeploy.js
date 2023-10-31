@@ -14,17 +14,6 @@ const { getRootFromMT } = require("../utils/merkleTree");
 let MINTER_ROLE = getRole("MINTER_ROLE");
 let BURNER_ROLE = getRole("BURNER_ROLE");
 
-async function deployMumbai() {
-  let cuyCollectionContract = await deploySC("CuyCollectionNft", []);
-  let cuyColproxyAdd = await cuyCollectionContract.getAddress();
-
-  let implAdd = await printAddress("CuyCollectionNft", cuyColproxyAdd);
-
-  const relMumbai = "0x4b8a6C8ADA8F3ea961b768ee97bEbB04eE4b5B9D";
-  await cuyCollectionContract.grantRole(MINTER_ROLE, relMumbai);
-
-  await verify(implAdd, "CuyCollectionNft", []);
-}
 
 async function deployGoerli() {
   let bbitesContract = await deploySC("BBitesToken", []);
@@ -41,8 +30,8 @@ async function deployGoerli() {
 }
 
 async function deployPublicSale() {
-  let bbitesTokAdd = "0xdEE58A6F0c8fA0a45f4BE2686696B8aa7F04ce47";
-  let usdCoinAdd = "0x12711c84a5d4Add034431C132043a7F9F808f278";
+  let bbitesTokAdd = "0xE255E418cd36f9F6Eae5374aABE0fB8b8D0ED302";
+  let usdCoinAdd = "0x1Aaaa873cc3280DB38B94843D7642459DE2823Ea";
   let publicSale = await deploySC("PublicSale", [bbitesTokAdd, usdCoinAdd]);
   let publicSaleProxyAdd = await publicSale.getAddress();
   let impPS = await printAddress("PublicSale", publicSaleProxyAdd);
@@ -75,7 +64,6 @@ function roles() {
   console.log(`El burner role en bytes32 es: ${BURNER_ROLE}`);
 }
 
-//deployMumbai()
 //deployGoerli()
 deployPublicSale()
   //roles()

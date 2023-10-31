@@ -24,7 +24,6 @@ contract CuyCollectionNft is
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
     bytes32 public root;
-
     event Burn(address account, uint256 id);
 
     function initialize() public initializer {
@@ -46,7 +45,7 @@ contract CuyCollectionNft is
     ) internal override onlyOwner {}
 
     function _baseURI() internal pure override returns (string memory) {
-        return "ipfs://QmZXRTmRSnJz9KDwmg7TtjLFUxGsh38xLLYVMvdKg5dX8Q/";
+        return "ipfs://QmPRt35yQDX1wP6JVPJdUkebkzcpULJhJrCUaM3UXLnKR3/";
     }
 
     function setRoot(bytes32 _root) public onlyOwner {
@@ -57,7 +56,6 @@ contract CuyCollectionNft is
         address to,
         uint256 tokenId
     ) public whenNotPaused onlyRole(MINTER_ROLE) {
-        // solo puede ser llamado por el Relayer de Open Zeppelin en Mumbai. Los ids permitidos van del 0 al 999 para este método
         require(
             tokenId >= 0 && 999 >= tokenId,
             "Estas tratando de mintear un NFT que es exclusivo para usuarios de la lista blanca"
@@ -70,7 +68,6 @@ contract CuyCollectionNft is
         uint256 tokenId,
         bytes32[] calldata proofs
     ) public whenNotPaused {
-        //Internamente este método valida que to y tokenId sean parte de la lista.
         bytes32 leaf = keccak256(abi.encodePacked(tokenId, to));
         require(
             tokenId >= 1000 && 1999 >= tokenId,

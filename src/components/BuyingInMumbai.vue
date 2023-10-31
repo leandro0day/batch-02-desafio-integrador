@@ -1,9 +1,9 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import buffer from "buffer";
-import { wallets } from "../../wallets/walletList";
+import  walletList from "../../wallets/walletList";
 import { MerkleTree } from "merkletreejs";
-import { Contract, ethers } from "ethers";
+import { ethers } from "ethers";
 
 let merkleTree;
 let root;
@@ -18,7 +18,7 @@ function hashToken(tokenId, account) {
   );
 }
 function buildMerkleTree() {
-  let elementosHasheados = wallets.map(({ id, address }) => {
+  let elementosHasheados = walletList.map(({ id, address }) => {
     return hashToken(id, address);
   });
   merkleTree = new MerkleTree(elementosHasheados, ethers.keccak256, {
@@ -26,7 +26,6 @@ function buildMerkleTree() {
   });
 
   root = merkleTree.getHexRoot();
-  console.log("White list", merkleTree.toString());
   console.log("root hash", root);
 }
 
@@ -36,8 +35,8 @@ let inputAccountProofId = ref();
 
 const getProofsButtonId = async () => {
   const hasheandoElemento = hashToken(
-    "1000",
-    "0xC840F562D9F69b46b4227003E01525CB99344B72"
+    inputIdProofId.value,
+    inputAccountProofId.value
   );
 
   const proofs = merkleTree.getHexProof(hasheandoElemento);
@@ -55,15 +54,13 @@ let whiteListToInputProofsId = ref();
 
 const safeMintWhiteListBttnId = async () => {
   // usar ethers.hexlify porque es un array de bytes
-  console.log(whiteListToInputId.value)
-  console.log(whiteListToInputTokenId.value)
   let proofs = whiteListToInputProofsId.value;
   proofs = JSON.parse(proofs).map(ethers.hexlify);
   let signer = await props.provider.getSigner(props.account.value);
   try {
     const tx = await props.NFT.connect(signer).safeMintWhiteList(
-      "0xC840F562D9F69b46b4227003E01525CB99344B72",
-      "1000",
+      whiteListToInputId.value,
+      whiteListToInputTokenId.value,
       proofs
     );
     const response = await tx.wait();
@@ -75,13 +72,12 @@ const safeMintWhiteListBttnId = async () => {
 };
 
 // buyBack
-const buyBackInputId = document.getElementById("buyBackInputId");
-const buyBackErrorId = document.getElementById("buyBackErrorId");
+let buyBackInputId = ref()
 const buyBackBttn = async () => {
   let signer = await props.provider.getSigner(props.account.value);
   try {
 
-    const tx = await props.NFT.connect(signer).buyBack(1000);
+    const tx = await props.NFT.connect(signer).buyBack(buyBackInputId.value);
     const response = await tx.wait();
     const transactionHash = response.hash;
     console.log("Tx Hash buyBack", transactionHash);
@@ -143,7 +139,7 @@ onMounted(() => {
     <label for="buyBackInputId">Buy Back and Burn NFT:</label>
     <input
       type="number"
-      id="buyBackInputId"
+      v-model="buyBackInputId"
       name="buyBackInput"
       placeholder="NFT id"
     />

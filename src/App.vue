@@ -31,9 +31,9 @@ let bbitesTknAdd, pubSContractAdd, usdcAddress, nftAddress;
 
 provider = new ethers.BrowserProvider(window.ethereum);
 signer = provider.getSigner(account.value);
-bbitesTknAdd = "0xdEE58A6F0c8fA0a45f4BE2686696B8aa7F04ce47";
-usdcAddress = "0x12711c84a5d4Add034431C132043a7F9F808f278";
-pubSContractAdd = "0xa5Fb4FeA60cbE9aaa91547De26d8fBCf6D81b90A";
+bbitesTknAdd = "0xE255E418cd36f9F6Eae5374aABE0fB8b8D0ED302";
+usdcAddress = "0x1Aaaa873cc3280DB38B94843D7642459DE2823Ea";
+pubSContractAdd = "0x0970F80451890F9Cf1B68E9DF66B95e8251F133E";
 providerListenerBBites = new ethers.JsonRpcProvider(
   "https://eth-goerli.g.alchemy.com/v2/c1oANXqAu408URmDw9WFiymFLKsYFYn-"
 );
@@ -50,7 +50,7 @@ pubSContract = new Contract(pubSContractAdd, publicSaleAbi.abi, provider);
 providerListenerNFT = new ethers.JsonRpcProvider(
   "https://polygon-mumbai.g.alchemy.com/v2/CplTokNbDbof1k5DSmAIxYIqW_DOe2rM"
 );
-nftAddress = "0x660d27f6cC8Bec626E3cd447a6fd92f4227BA3E8";
+nftAddress = "0x0643Bfa31a2041D580d22B505e019448d576c186";
 
 nftContract = new Contract(nftAddress, nftTknAbi.abi, provider);
 nftCListener = new Contract(

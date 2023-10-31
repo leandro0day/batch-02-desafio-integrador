@@ -35,7 +35,7 @@ const approveButtonUSDC = async () => {
       return (approveErrorUSDC.innerText = "Introduce un numero");
     }
     const tx = await props.USDC.connect(signer).approve(
-      props.USDCaddress,
+      props.PSaddress,
       approveInputUSDC.value.trim() + "000000"
     );
     const response = await tx.wait();

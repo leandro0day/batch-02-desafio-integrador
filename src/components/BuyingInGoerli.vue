@@ -23,6 +23,7 @@ const purchaseButton = async () => {
 let amountInUSDCInput = ref();
 let purchaseInputUSDC = ref();
 let purchaseErrorUSDC;
+
 const purchaseButtonUSDC = async () => {
   let signer = await props.provider.getSigner(props.account.value);
   try {
@@ -81,6 +82,9 @@ const sendEtherButton = async () => {
 let priceNftIdInput = ref();
 let getPriceNftError = document.getElementById("getPriceNftError");
 
+let showPrice = ref(false);
+let price = ref();
+
 const getPriceNftByIdBttn = async () => {
   let signer = await props.provider.getSigner(props.account.value);
   try {
@@ -89,6 +93,8 @@ const getPriceNftByIdBttn = async () => {
     );
     const NFTvalue = tx / BigInt(1 * 10 ** 18);
     console.log(NFTvalue);
+    price.value = `El precio del NFT: ${priceNftIdInput.value} es de: ${NFTvalue}.0`;
+    showPrice.value = true
   } catch (error) {
     console.log(error.message);
   }
@@ -100,7 +106,7 @@ const props = defineProps([
   "provider",
   "USDCaddress",
   "PS",
-  "account"
+  "account",
 ]);
 </script>
 
@@ -153,7 +159,7 @@ const props = defineProps([
       placeholder="NFT id"
     />
     <button @click="getPriceNftByIdBttn">Get Price</button>
-    <span>El precio del NFT:{{ priceNftIdInput }}</span>
+    <span v-if="showPrice">{{ price }}</span>
     <span id="getPriceNftError" style="color: red"></span>
   </div>
 </template>

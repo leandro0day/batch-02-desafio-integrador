@@ -49,8 +49,6 @@ contract BBitesToken is Initializable, ERC20Upgradeable, PausableUpgradeable, Ac
     }
 
     function mint(address to, uint256 amount) public whenNotPaused onlyRole(MINTER_ROLE){
-        /*Este método es disparado cuando desde Polygon (Mumbai) se quema un NFT cuyo id está entre 1000 y 1999 (inclusivo). 
-        Se acuña 10,000 tokens al address que quemó su NFT. */
         _mint(to, amount * 10 ** decimals());
     }
 }

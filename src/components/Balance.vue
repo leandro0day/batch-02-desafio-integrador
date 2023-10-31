@@ -21,7 +21,7 @@ const bbitesTknBalance = async () => {
     const BbitesBalance = ref();
     BbitesBalance.value = await props.BBTKN.balanceOf(props.account);
     console.log("Your BBTKN balance is", BbitesBalance);
-    Bbites.value = ethers.formatUnits(BbitesBalance.value, 6);
+    Bbites.value = ethers.formatUnits(BbitesBalance.value, 18);
   } catch (error) {
     console.error("Error  obtener el balance de BBTKN:", error.message);
   }
